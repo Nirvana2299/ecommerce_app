@@ -9,51 +9,39 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Improved image handling
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8), // Rounded image corners
-              child: Image.network(
-                product.image,
-                fit: BoxFit.cover,
-                height: 60,
-                width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network(product.image, fit: BoxFit.cover, height: 90, width: double.infinity,),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(product.title, style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text('\$${product.price.toStringAsFixed(2)}'),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  cartProvider.addToCart(product);
+                },
+                child: const Text('Add to Cart'),
               ),
-            ),
-            const SizedBox(height: 8),
-            // Title with overflow handling
-            Text(
-              product.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            // Price display
-            Text(
-              '\$${product.price.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 14, color: Colors.green),
-            ),
-            const SizedBox(height: 8),
-            // Add to cart button
-            ElevatedButton(
-              onPressed: () {
-                Provider.of<CartProvider>(context, listen: false).addToCart(product);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 40), // Full-width button
+              IconButton(
+                icon: const Icon(Icons.remove_circle),
+                onPressed: () {
+                  cartProvider.removeFromCart(product);
+                },
               ),
-              child: const Text('Add to Cart'),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
